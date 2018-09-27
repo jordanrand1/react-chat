@@ -10,6 +10,7 @@ import {
   Button,
 } from 'semantic-ui-react';
 import styled from 'styled-components';
+import ChatMessage from './ChatMessage';
 
 const MainWindow = styled(Segment)`
   border: 3px solid black;
@@ -34,16 +35,32 @@ class ChatWindow extends React.Component{
 
   state = {}
 
-  displayMessages = () => {
+  componentDidMount() {
+    this.props.dispatch(setFlash('Welcome to React Chat', 'green'))
+  }
 
+  displayMessages = () => {
+    const { messages } = this.props
+    
+    if (messages.length)
+      return messages.map( (m,i) => <ChatMessage key={i} {...m} />)
+    return (
+      <Segment inverted textAlign="center">
+        <Header as="h1">No Messages Yet</Header>
+      </Segment>
+    )
   }
 
   addMessage = (e) => {
-
+    e.preventDefault()
+    const { dispatch, user: { email } } = this.props
+    const { message } = this.state
+    dispatch(addMessage({ email, body: message }))
+    this.setState({ message: '' })
   }
 
   setMessage = (e) => {
-
+    this.setState({ message: e.target.value })
   }
 
   render() {
